@@ -1,6 +1,4 @@
-# Pocket Lawyer
-
-Pocket Lawyer: Your Legal Friend in Your Pocket
+# Pocket Lawyer: Your Legal Friend in Your Pocket
 
 Pocket Lawyer is an iOS app for understanding various legal issues such divorce, housing, and employment. Get accurate, up-to-date information sourced from credible legal literature at your fingertips. 
 
