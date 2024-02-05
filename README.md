@@ -1,4 +1,4 @@
-# PocketLawyer
+# Pocket Lawyer
 
 Pocket Lawyer: Your Legal Friend in Your Pocket
 
