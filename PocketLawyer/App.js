@@ -49,10 +49,14 @@ const App = () => {
     )
   );
 
+  // Scroll to the end whenever the component renders
   useEffect(() => {
-    // Scroll to the end of the list whenever messages change
     flatListRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+  }, []); // Empty dependency array [] ensures scroll on every render
+
+  const clearChat = () => {
+    setMessages([]); // Set messages state to an empty array to clear chat
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,10 +93,16 @@ const App = () => {
         <TouchableOpacity style={styles.sendButton} onPress={() => sendMessage(userInput)}>
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.clearButton} onPress={clearChat}>
+          <Text style={styles.clearButtonText}>Clear</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
+
+
+
 
 
 const styles = StyleSheet.create({
@@ -131,13 +141,11 @@ const styles = StyleSheet.create({
     borderRadius: 5, // Add some rounded corners
   },
   sendButton: {
-    backgroundColor: '#ccc', // Customize button color
+    backgroundColor: '#7FFF7F', // Customize button color
     paddingHorizontal: 15, // Adjust padding for comfort
     paddingVertical: 10, // Adjust padding for comfort
     borderRadius: 5, // Add some rounded corners
-    position: 'absolute', // Make button absolute positioned
-    bottom: 10, // Adjust bottom position
-    right: 10, // Adjust right position
+
   },
   sendButtonText: {
     color: '#000', // Customize button text color
@@ -168,6 +176,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+  },
+  clearButton: {
+    backgroundColor: '#FF3333', // Match background color of other buttons
+    paddingHorizontal: 15, // Adjust padding for comfort
+    paddingVertical: 10, // Adjust padding for comfort
+    borderRadius: 5, // Add some rounded corners
+   
+  },
+  clearButtonText: {
+    color: '#000', // Customize button text color
+    fontSize: 16, // Adjust font size
   },
   textInput: {
     flex: 1,
