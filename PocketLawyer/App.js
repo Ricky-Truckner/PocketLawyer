@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
 import { StatusBar } from 'expo-status-bar';
 import { FlatList } from 'react-native';
+import moment from 'moment';
 
 const bankruptcyQuestions = ['What are the types of bankruptcy?', 'What are the steps involved in filing for bankruptcy?', 'What debts can be discharged in bankruptcy?'];
 
@@ -12,7 +13,11 @@ const App = () => {
   const [userInput, setUserInput] = useState(''); // State for user input
   const textInputRef = useRef(null); // Ref to hold the TextInput element
   const flatListRef = useRef(null); // Ref to hold the FlatList component
+  const formatDate = (date) => {
+    return moment(date).format('h:mm A'); // Adjust format as needed (e.g., 24-hour format)
+  };
 
+  
   const sendMessage = (text) => {
     if (text.trim()) {
       // Add user message to state immediately
@@ -34,19 +39,24 @@ const App = () => {
   const handleButtonClick = (question) => {
     sendMessage(question); // Call sendMessage with question text
   };
-
   const renderMessage = ({ item }) => (
-    item.user ? (
-      <View style={[styles.messageContainer, styles.userBubble]}>
-        <Text style={styles.userName}>You</Text>
-        <Text style={styles.messageText}>{item.text}</Text>
-      </View>
-    ) : (
-      <View style={[styles.messageContainer, styles.botBubble]}>
-        <Text style={styles.userName}>Claire</Text>
-        <Text style={styles.messageText}>{item.text}</Text>
-      </View>
-    )
+    <View style={[styles.messageContainer, styles[item.user ? 'userBubble' : 'botBubble']]}>
+      {item.user ? null : ( // Only render avatar container for bot messages
+        <View style={styles.messageHeader}>
+          <Image source={require('./assets/claire_avatar.png')} // Replace with your image path
+                 style={styles.avatar} />
+        </View>
+      )}
+      <Text style={styles.userName}>{item.user ? 'You' : 'Claire'}</Text>
+      {item.user === false && (
+        <View style={styles.onlineStatusContainer}>
+          <Text style={styles.onlineStatus}>Online</Text>
+        </View>
+      )}
+      <Text style={styles.messageText}>{item.text}</Text>
+      <Text style={styles.timestamp}>{moment(new Date()).format('h:mm A')}</Text>
+
+    </View>
   );
 
   // Scroll to the end whenever the component renders
@@ -104,7 +114,6 @@ const App = () => {
 
 
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -114,13 +123,18 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   messageContainer: {
-    marginBottom: 20,
+    marginBottom:25,
     borderRadius: 5,
     padding: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+  },
+  messageHeader: {
+    flexDirection: 'row', // Arrange elements horizontally
+    alignItems: 'center', // Align vertically in center
+    marginBottom: 5, // Add some margin for spacing
   },
   buttonContainer: {
     flexDirection: 'row', // Make the container arrange items horizontally
@@ -146,6 +160,42 @@ const styles = StyleSheet.create({
     paddingVertical: 10, // Adjust padding for comfort
     borderRadius: 5, // Add some rounded corners
 
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#eee', // Optional background color
+  },
+  avatarContainer: {
+    marginRight: 10,
+  },
+  avatar: {
+    width: 30,
+    height:30,
+    borderRadius: 20, // Make the avatar image circular
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  onlineStatus: {
+    bottom: 1,
+    right: -3,
+    fontSize: 8,
+    color: '#333',
+  },
+  onlineStatusContainer: {
+    position: 'absolute', // Position absolutely to place next to username
+    top: -8, // Adjust top position as needed
+    right: 5, // Align right for bot messages
+  },
+  timestamp: {
+    position: 'absolute', // Absolute positioning
+    bottom: -13, // Adjust position from bottom
+    right: 0, // Adjust position from right
+    fontSize: 10, // Adjust font size
+    color: '#999', // Adjust color
   },
   sendButtonText: {
     color: '#000', // Customize button text color
@@ -188,6 +238,7 @@ const styles = StyleSheet.create({
     color: '#000', // Customize button text color
     fontSize: 16, // Adjust font size
   },
+  
   textInput: {
     flex: 1,
     backgroundColor: '#eee',
