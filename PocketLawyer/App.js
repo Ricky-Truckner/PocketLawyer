@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { FlatList } from 'react-native';
+
+const bankruptcyQuestions = ['What are the types of bankruptcy?', 'What are the steps involved in filing for bankruptcy?', 'What debts can be discharged in bankruptcy?'];
 
 const App = () => {
   const [messages, setMessages] = useState([ // Simulate initial bot message
@@ -11,10 +13,10 @@ const App = () => {
   const textInputRef = useRef(null); // Ref to hold the TextInput element
   const flatListRef = useRef(null); // Ref to hold the FlatList component
 
-  const sendMessage = () => {
-    if (userInput.trim()) {
+  const sendMessage = (text) => {
+    if (text.trim()) {
       // Add user message to state immediately
-      const newMessages = [...messages, { user: true, text: userInput }];
+      const newMessages = [...messages, { user: true, text }];
       setMessages(newMessages); // Update state with new messages array
       setUserInput(''); // Clear input field after sending
 
@@ -27,6 +29,10 @@ const App = () => {
 
   const handleContentSizeChange = (contentWidth) => {
     textInputRef.current.setNativeProps({ style: { width: contentWidth + 20 } }); // Add padding
+  };
+
+  const handleButtonClick = (question) => {
+    sendMessage(question); // Call sendMessage with question text
   };
 
   const renderMessage = ({ item }) => (
@@ -59,6 +65,18 @@ const App = () => {
         contentContainerStyle={styles.chatContainer}
         inverted={false} // Display messages in reverse order (newest on top)
       />
+      {/* Three Ask a Question Buttons - Arranged horizontally */}
+      <View style={styles.buttonContainer}>
+        {bankruptcyQuestions.map((question, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.askButton}
+            onPress={() => handleButtonClick(question)}
+          >
+            <Text style={styles.askButtonText}>Question {index + 1}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
       <View style={styles.inputContainer}>
         <TextInput
           ref={textInputRef}
@@ -68,17 +86,19 @@ const App = () => {
           placeholder="Ask your legal question..."
           onContentSizeChange={handleContentSizeChange}
         />
-        <Button title="Send" onPress={sendMessage} />
+        <TouchableOpacity style={styles.sendButton} onPress={() => sendMessage(userInput)}>
+          <Text style={styles.sendButtonText}>Send</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
+   },
   chatContainer: {
     flex: 1,
     padding: 10,
@@ -91,6 +111,41 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+  },
+  buttonContainer: {
+    flexDirection: 'row', // Make the container arrange items horizontally
+    justifyContent: 'space-between', // Distribute items evenly along the main axis
+    paddingHorizontal: 10, // Add padding to the sides
+    marginBottom: 10, // Add margin at the bottom
+  },
+  askButton: {
+    backgroundColor: '#ccc', // Match background color of "Send" button
+    paddingHorizontal: 15,
+    paddingVertical: 10, // Adjust padding for comfort
+    borderRadius: 5, // Add some rounded corners
+  },
+  customButton: {
+    backgroundColor: '#333', // Customize button color
+    paddingHorizontal: 15, // Adjust padding for comfort
+    paddingVertical: 10, // Adjust padding for comfort
+    borderRadius: 5, // Add some rounded corners
+  },
+  sendButton: {
+    backgroundColor: '#ccc', // Customize button color
+    paddingHorizontal: 15, // Adjust padding for comfort
+    paddingVertical: 10, // Adjust padding for comfort
+    borderRadius: 5, // Add some rounded corners
+    position: 'absolute', // Make button absolute positioned
+    bottom: 10, // Adjust bottom position
+    right: 10, // Adjust right position
+  },
+  sendButtonText: {
+    color: '#000', // Customize button text color
+    fontSize: 16, // Adjust font size
+  },
+  buttonText: {
+    color: '#fff', // Customize button text color
+    fontSize: 16, // Adjust font size
   },
   userBubble: {
     backgroundColor: '#ddd', // Adjust for user message color
