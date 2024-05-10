@@ -3,6 +3,11 @@ import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Imag
 import { StatusBar } from 'expo-status-bar';
 import { FlatList } from 'react-native';
 import moment from 'moment';
+import * as Speech from "expo-speech";
+import { FontAwesome } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import FlashMessage, { showMessage } from "react-native-flash-message";
+
 
 const bankruptcyQuestions = ['What are the types of bankruptcy?', 'What are the steps involved in filing for bankruptcy?', 'What debts can be discharged in bankruptcy?'];
 
@@ -13,22 +18,39 @@ const App = () => {
   const [userInput, setUserInput] = useState(''); // State for user input
   const textInputRef = useRef(null); // Ref to hold the TextInput element
   const flatListRef = useRef(null); // Ref to hold the FlatList component
+  const API_KEY = "AIzaSyBh4jTT75GDIasd0z2jMOzufCww-GiJz6o";
+
   const formatDate = (date) => {
     return moment(date).format('h:mm A'); // Adjust format as needed (e.g., 24-hour format)
   };
 
   
   const sendMessage = (text) => {
+    const sendUserMessage = async () => {
+      setLoading(true);
+      const userMessage = { text: userInput, user: true };
+      setMessages([...messages, userMessage]);
+    
+      // Gemini Integration
+      const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const prompt = userMessage.text;
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      // **Change here:** Get the actual response text from Gemini
+      const text = response.text(); // This now uses the actual response
+      setMessages([...messages, { text, user: false }]);
+      setLoading(false);
+      setUserInput("");
+    }
+
     if (text.trim()) {
       // Add user message to state immediately
       const newMessages = [...messages, { user: true, text }];
       setMessages(newMessages); // Update state with new messages array
       setUserInput(''); // Clear input field after sending
 
-      // Simulate asynchronous Lex response (replace with your Lex integration)
-      setTimeout(() => {
-        setMessages([...newMessages, { user: false, text: 'Here is some info!' }]);
-      }, 1000); // Simulate 1 second delay
+      sendUserMessage(); // Call the function to send the message and get response
     }
   };
 
