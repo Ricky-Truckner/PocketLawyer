@@ -12,7 +12,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const bankruptcyQuestions = ['What are the types of bankruptcy?', 'What are the steps involved in filing for bankruptcy?', 'What debts can be discharged in bankruptcy?'];
 const API_KEY = "AIzaSyA6i9CGSXI0B8yUFAzueR5xBeQdrs-ZfCE";
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
 const App = () => {
@@ -50,6 +50,7 @@ const App = () => {
       
   const sendMessage = (text) => {
     const sendUserMessage = async () => {
+      //setLoading(true);
       const userMessage = { text: userInput, user: true };
       setMessages([...messages, userMessage]);
     
@@ -57,12 +58,14 @@ const App = () => {
 
       const prompt = userInput
 
+
+
       const result = await model.generateContent(userInput);
       const response = await result.response;
       
-      const botMessage = { text: response, user: false };
+      const botMessage = { text: response.text(), user: false };
       setMessages([...messages, botMessage]);
-      setLoading(false);
+      //setLoading(false);
       setUserInput("");
     }
 
