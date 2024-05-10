@@ -7,9 +7,13 @@ import * as Speech from "expo-speech";
 import { FontAwesome } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
 const bankruptcyQuestions = ['What are the types of bankruptcy?', 'What are the steps involved in filing for bankruptcy?', 'What debts can be discharged in bankruptcy?'];
+const API_KEY = "AIzaSyA6i9CGSXI0B8yUFAzueR5xBeQdrs-ZfCE";
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
 const App = () => {
   const [messages, setMessages] = useState([ // Simulate initial bot message
@@ -18,14 +22,13 @@ const App = () => {
   const [userInput, setUserInput] = useState(''); // State for user input
   const textInputRef = useRef(null); // Ref to hold the TextInput element
   const flatListRef = useRef(null); // Ref to hold the FlatList component
-  const API_KEY = "AIzaSyBh4jTT75GDIasd0z2jMOzufCww-GiJz6o";
 
   const formatDate = (date) => {
     return moment(date).format('h:mm A'); // Adjust format as needed (e.g., 24-hour format)
   };
 
   
-  const sendMessage = (text) => {
+ /* const sendMessage = (text) => {
     const sendUserMessage = async () => {
       setLoading(true);
       const userMessage = { text: userInput, user: true };
@@ -38,8 +41,27 @@ const App = () => {
       const result = await model.generateContent(prompt);
       const response = result.response;
       // **Change here:** Get the actual response text from Gemini
-      const text = response.text(); // This now uses the actual response
-      setMessages([...messages, { text, user: false }]);
+      // const AIReply = response.text(); // This now uses the actual response
+      const AIReply = { text: response.text(), user: false };
+      setMessages([...messages, AIReply]);
+      setLoading(false);
+      setUserInput("");
+    }*/
+      
+  const sendMessage = (text) => {
+    const sendUserMessage = async () => {
+      const userMessage = { text: userInput, user: true };
+      setMessages([...messages, userMessage]);
+    
+
+
+      const prompt = userInput
+
+      const result = await model.generateContent(userInput);
+      const response = await result.response;
+      
+      const botMessage = { text: response, user: false };
+      setMessages([...messages, botMessage]);
       setLoading(false);
       setUserInput("");
     }
