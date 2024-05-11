@@ -10,7 +10,12 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
-const bankruptcyQuestions = ['What are the types of bankruptcy?', 'What are the steps involved in filing for bankruptcy?', 'What debts can be discharged in bankruptcy?'];
+const bankruptcyQuestions = [
+  'What are the categories of bankruptcy?',
+  'What are the steps involved in filing for bankruptcy?',
+  'What are the consequences of filing for bankruptcy?'
+];
+const questionTitles = ['Categories', 'Steps Involved', 'Consequences']; // Array to hold button titles
 const API_KEY = "AIzaSyA6i9CGSXI0B8yUFAzueR5xBeQdrs-ZfCE";
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -24,7 +29,7 @@ const App = () => {
   const flatListRef = useRef(null); // Ref to hold the FlatList component
 
   const formatDate = (date) => {
-    return moment(date).format('h:mm A'); // Adjust format as needed (e.g., 24-hour format)
+    return moment(date).format('h:mm A'); // Adjust format as needed 
   };
 
   const sendMessage = async (text) => {
@@ -55,8 +60,8 @@ const App = () => {
     textInputRef.current.setNativeProps({ style: { width: contentWidth + 20 } }); // Add padding
   };
 
-  const handleButtonClick = (question) => {
-    sendMessage(question); // Call sendMessage with question text
+  const handleButtonClick = (question, index) => {
+    sendMessage(bankruptcyQuestions[index]); // Send the actual bankruptcy question
   };
   const renderMessage = ({ item }) => (
     <View style={[styles.messageContainer, styles[item.user ? 'userBubble' : 'botBubble']]}>
@@ -81,8 +86,7 @@ const App = () => {
   // Scroll to the end whenever the component renders
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true });
-  }, []); // Empty dependency array [] ensures scroll on every render
-
+  }, []); 
   const clearChat = () => {
     setMessages([]); // Set messages state to an empty array to clear chat
   };
@@ -104,9 +108,9 @@ const App = () => {
           <TouchableOpacity
             key={index}
             style={styles.askButton}
-            onPress={() => handleButtonClick(question)}
+            onPress={() => handleButtonClick(question, index)}
           >
-            <Text style={styles.askButtonText}>Question {index + 1}</Text>
+            <Text style={styles.askButtonText}>{questionTitles[index]}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -129,8 +133,6 @@ const App = () => {
     </SafeAreaView>
   );
 };
-
-
 
 
 const styles = StyleSheet.create({
