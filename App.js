@@ -13,7 +13,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const bankruptcyQuestions = ['What are the types of bankruptcy?', 'What are the steps involved in filing for bankruptcy?', 'What debts can be discharged in bankruptcy?'];
 const API_KEY = "AIzaSyA6i9CGSXI0B8yUFAzueR5xBeQdrs-ZfCE";
 const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 const App = () => {
   const [messages, setMessages] = useState([ // Simulate initial bot message
@@ -27,56 +27,28 @@ const App = () => {
     return moment(date).format('h:mm A'); // Adjust format as needed (e.g., 24-hour format)
   };
 
-  
- /* const sendMessage = (text) => {
-    const sendUserMessage = async () => {
-      setLoading(true);
-      const userMessage = { text: userInput, user: true };
-      setMessages([...messages, userMessage]);
-    
-      // Gemini Integration
-      const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = userMessage.text;
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      // **Change here:** Get the actual response text from Gemini
-      // const AIReply = response.text(); // This now uses the actual response
-      const AIReply = { text: response.text(), user: false };
-      setMessages([...messages, AIReply]);
-      setLoading(false);
-      setUserInput("");
-    }*/
-      
-  const sendMessage = (text) => {
-    const sendUserMessage = async () => {
-      //setLoading(true);
-      const userMessage = { text: userInput, user: true };
-      setMessages([...messages, userMessage]);
-    
-
-
-      const prompt = userInput
-
-
-
-      const result = await model.generateContent(userInput);
-      const response = await result.response;
-      
-      const botMessage = { text: response.text(), user: false };
-      setMessages([...messages, botMessage]);
-      //setLoading(false);
-      setUserInput("");
-    }
-
+  const sendMessage = async (text) => {
     if (text.trim()) {
-      // Add user message to state immediately
-      const newMessages = [...messages, { user: true, text }];
-      setMessages(newMessages); // Update state with new messages array
+      // Update messages state directly with the new user message
+      setMessages((prevMessages) => [...prevMessages, { user: true, text }]);
       setUserInput(''); // Clear input field after sending
 
-      sendUserMessage(); // Call the function to send the message and get response
+      const userMessage = { text, user: true }; // Define userMessage here
+      const prompt = userMessage.text;
+
+      // Call sendUserMessage and wait for response using await
+      const botMessage = await sendUserMessage(prompt); 
+      setMessages([...messages, botMessage]); // Add bot message to state after receiving response
     }
+  };
+
+  const sendUserMessage = async (prompt) => {
+    //setLoading(true); // Uncomment if using loading functionality
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const botMessage = { text: response.text(), user: false };
+    //setLoading(false); // Uncomment if using loading functionality
+    return botMessage; // Return the bot message object
   };
 
   const handleContentSizeChange = (contentWidth) => {
