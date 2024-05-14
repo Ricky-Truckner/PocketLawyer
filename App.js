@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
+import { ScrollView, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
 import { StatusBar } from 'expo-status-bar';
 import { FlatList } from 'react-native';
 import moment from 'moment';
@@ -47,7 +47,7 @@ const App = () => {
     }
   };
 
-  const sendUserMessage = async (prompt) => {
+  const sendUserMessage = async (prompt) => {``
     //setLoading(true); // Uncomment if using loading functionality
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -102,6 +102,7 @@ const App = () => {
         contentContainerStyle={styles.chatContainer}
         inverted={false} // Display messages in reverse order (newest on top)
       />
+      
       {/* Three Ask a Question Buttons - Arranged horizontally */}
       <View style={styles.buttonContainer}>
         {bankruptcyQuestions.map((question, index) => (
@@ -136,11 +137,10 @@ const App = () => {
 
 
 const styles = StyleSheet.create({
-  container: {
+  container: { 
     flex: 1,
    },
   chatContainer: {
-    flex: 1,
     padding: 10,
   },
   messageContainer: {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#eee', // Optional background color
+    backgroundColor: '#d4d4d4', // Optional background color
   },
   avatarContainer: {
     marginRight: 10,
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start', // Align user messages to left
   },
   botBubble: {
-    backgroundColor: '#fff', // Adjust for bot message color
+    backgroundColor: '#f0f0f0', // Adjust for bot message color
     alignSelf: 'flex-end', // Align bot messages to right
   },
   userName: {
