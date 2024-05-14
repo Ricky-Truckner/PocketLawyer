@@ -7,3 +7,12 @@ Pocket Lawyer explains things clearly, making legal knowledge accessible to thos
 Find qualified lawyers nearby through our integrated directory, filtered by your specific needs.
 
 Enjoy valuable legal assistance at no cost! Empower yourself with Pocket Lawyer. Download the app today!
+
+For setup & installation:
+1. Clone Repo
+2. npm install
+3. npx expo start --tunnel
+4. Sometimes expo tunnel service needs to be installed locally-not globally.
+
+If not downloaded automatically:
+- npm install @google/generative-ai
