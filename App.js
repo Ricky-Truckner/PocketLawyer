@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ScrollView, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
+import { Button, Alert, Share, KeyboardAvoidingView, ScrollView, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
 import { StatusBar } from 'expo-status-bar';
 import { FlatList } from 'react-native';
 import moment from 'moment';
@@ -8,7 +8,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const bankruptcyQuestions = [
   'What are the categories of bankruptcy?',
@@ -19,6 +19,7 @@ const questionTitles = ['Categories', 'Steps Involved', 'Consequences']; // Arra
 const API_KEY = "AIzaSyA6i9CGSXI0B8yUFAzueR5xBeQdrs-ZfCE";
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+lastMessage = 'Default';
 
 const App = () => {
   const [messages, setMessages] = useState([ // Simulate initial bot message
@@ -27,6 +28,26 @@ const App = () => {
   const [userInput, setUserInput] = useState(''); // State for user input
   const textInputRef = useRef(null); // Ref to hold the TextInput element
   const flatListRef = useRef(null); // Ref to hold the FlatList component
+
+  // share button logics
+  const onShare= async () => {
+    if (lastMessage == 'Default') {Alert.alert('App was refreshed, please ask again.')}
+    else
+      try {
+        const result = await Share.share({message: lastMessage});
+        if (result.action === Share.sharedAction) {
+          if (result.activityType) {
+            // shared with activity type of result.acitivtyType
+          } else {
+            // shared
+          }
+        } else if (result.action === Share.dismissedAction) {
+          // dismissed
+        }
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+  };
 
   const formatDate = (date) => {
     return moment(date).format('h:mm A'); // Adjust format as needed 
@@ -52,6 +73,7 @@ const App = () => {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const botMessage = { text: response.text(), user: false };
+    lastMessage = response.text();
     //setLoading(false); // Uncomment if using loading functionality
     return botMessage; // Return the bot message object
   };
@@ -77,7 +99,21 @@ const App = () => {
           <Text style={styles.onlineStatus}>Online</Text>
         </View>
       )}
+
       <Text style={styles.messageText}>{item.text}</Text>
+
+      
+      {item.user === false && (
+          <View style={{alignItems: 'flex-end'}}>
+          <Button onPress={onShare} icon={{
+            name: "arrow-right",
+            size: 15,
+            color: "white"
+          }} title="export" color="#404040"/>
+          </View>
+      )}
+      
+
       <Text style={styles.timestamp}>{moment(new Date()).format('h:mm A')}</Text>
 
     </View>
@@ -93,7 +129,7 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
+    <StatusBar style="auto" />
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -104,6 +140,7 @@ const App = () => {
       />
       
       {/* Three Ask a Question Buttons - Arranged horizontally */}
+      <KeyboardAvoidingView>
       <View style={styles.buttonContainer}>
         {bankruptcyQuestions.map((question, index) => (
           <TouchableOpacity
@@ -131,6 +168,7 @@ const App = () => {
           <Text style={styles.clearButtonText}>Clear</Text>
         </TouchableOpacity>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -138,6 +176,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: { 
+    marginTop: 40,
     flex: 1,
    },
   chatContainer: {
@@ -161,7 +200,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Make the container arrange items horizontally
     justifyContent: 'space-between', // Distribute items evenly along the main axis
     paddingHorizontal: 10, // Add padding to the sides
-    marginBottom: 10, // Add margin at the bottom
+    marginBottom: 0, // Add margin at the bottom
+    marginTop: 5,
   },
   askButton: {
     backgroundColor: '#ccc', // Match background color of "Send" button
@@ -246,13 +286,14 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    padding: 8,
   },
   clearButton: {
     backgroundColor: '#FF3333', // Match background color of other buttons
     paddingHorizontal: 15, // Adjust padding for comfort
     paddingVertical: 10, // Adjust padding for comfort
     borderRadius: 5, // Add some rounded corners
+    marginLeft: 10,
    
   },
   clearButtonText: {
@@ -261,10 +302,11 @@ const styles = StyleSheet.create({
   },
   
   textInput: {
-    flex: 1,
-    backgroundColor: '#eee',
-    borderRadius: 5,
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
     padding: 10,
+    borderRadius: 5,
   },
 });
 
