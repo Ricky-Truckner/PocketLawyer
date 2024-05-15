@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Alert, Share, KeyboardAvoidingView, ScrollView, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
+import { Pressable, Button, Alert, Share, KeyboardAvoidingView, ScrollView, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
 import { StatusBar } from 'expo-status-bar';
 import { FlatList } from 'react-native';
 import moment from 'moment';
@@ -20,6 +20,7 @@ const API_KEY = "AIzaSyA6i9CGSXI0B8yUFAzueR5xBeQdrs-ZfCE";
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 lastMessage = 'Default';
+count = 0;
 
 const App = () => {
   const [messages, setMessages] = useState([ // Simulate initial bot message
@@ -28,6 +29,8 @@ const App = () => {
   const [userInput, setUserInput] = useState(''); // State for user input
   const textInputRef = useRef(null); // Ref to hold the TextInput element
   const flatListRef = useRef(null); // Ref to hold the FlatList component
+
+
 
   // share button logics
   const onShare= async () => {
@@ -48,6 +51,7 @@ const App = () => {
         Alert.alert(error.message);
       }
   };
+  
 
   const formatDate = (date) => {
     return moment(date).format('h:mm A'); // Adjust format as needed 
@@ -67,6 +71,7 @@ const App = () => {
       setMessages([...messages, botMessage]); // Add bot message to state after receiving response
     }
   };
+
 
   const sendUserMessage = async (prompt) => {``
     //setLoading(true); // Uncomment if using loading functionality
@@ -103,16 +108,13 @@ const App = () => {
       <Text style={styles.messageText}>{item.text}</Text>
 
       
-      {item.user === false && (
+      {item.text != 'Hello, what bankruptcy questions do you have?' && item.user === false && (
           <View style={{alignItems: 'flex-end'}}>
-          <Button onPress={onShare} icon={{
-            name: "arrow-right",
-            size: 15,
-            color: "white"
-          }} title="export" color="#404040"/>
+          <Pressable style={styles.exportButton} onPress={onShare}>
+              <Text style={styles.text}>Export</Text>
+          </Pressable>
           </View>
       )}
-      
 
       <Text style={styles.timestamp}>{moment(new Date()).format('h:mm A')}</Text>
 
@@ -125,6 +127,7 @@ const App = () => {
   }, []); 
   const clearChat = () => {
     setMessages([]); // Set messages state to an empty array to clear chat
+    count = 1;
   };
 
   return (
@@ -307,6 +310,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 5,
+  },
+  exportButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    elevation: 3,
+    backgroundColor: 'black',
+  },
+  text: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
   },
 });
 
