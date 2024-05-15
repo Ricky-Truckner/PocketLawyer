@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { Component, useState, useRef, useEffect } from 'react';
 import { Pressable, Button, Alert, Share, KeyboardAvoidingView, ScrollView, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'; // Import Image here
 import { StatusBar } from 'expo-status-bar';
 import { FlatList } from 'react-native';
@@ -11,11 +11,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const bankruptcyQuestions = [
-  'What are the categories of bankruptcy?',
+  'What are the categories of bankruptcy in detail?',
   'What are the steps involved in filing for bankruptcy?',
-  'What are the consequences of filing for bankruptcy?'
+  'What are the pros and cons of filing for bankruptcy?'
 ];
-const questionTitles = ['Categories', 'Steps Involved', 'Consequences']; // Array to hold button titles
+const questionTitles = ['Categories', 'Steps Involved', 'Pros & Cons']; // Array to hold button titles
 const API_KEY = "AIzaSyA6i9CGSXI0B8yUFAzueR5xBeQdrs-ZfCE";
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -29,8 +29,6 @@ const App = () => {
   const [userInput, setUserInput] = useState(''); // State for user input
   const textInputRef = useRef(null); // Ref to hold the TextInput element
   const flatListRef = useRef(null); // Ref to hold the FlatList component
-
-
 
   // share button logics
   const onShare= async () => {
@@ -61,6 +59,10 @@ const App = () => {
     if (text.trim()) {
       // Update messages state directly with the new user message
       setMessages((prevMessages) => [...prevMessages, { user: true, text }]);
+      // bot responds with "please wait while im thinking.." after short delay.
+      setTimeout(() => {
+      setMessages((prevMessages) => [...prevMessages, { user: false, text: 'Please wait a few seconds while I think about that...' }]);
+      }, 800);
       setUserInput(''); // Clear input field after sending
 
       const userMessage = { text, user: true }; // Define userMessage here
@@ -108,7 +110,9 @@ const App = () => {
       <Text style={styles.messageText}>{item.text}</Text>
 
       
-      {item.text != 'Hello, what bankruptcy questions do you have?' && item.user === false && (
+      {item.text != 'Hello, what bankruptcy questions do you have?'
+      && item.text != 'Please wait a few seconds while I think about that...' 
+      && item.user === false && (
           <View style={{alignItems: 'flex-end'}}>
           <Pressable style={styles.exportButton} onPress={onShare}>
               <Text style={styles.text}>Export</Text>
